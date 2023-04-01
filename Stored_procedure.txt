@@ -1,0 +1,137 @@
+	П О Л Ь З О В А Т Е Л И
+- Создание пользователя
+CREATE PROCEDURE CreateUser (
+	_firstName varchar, 
+	_email varchar, 
+	_password varchar, 
+	_roles varchar
+)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	INSERT INTO users ("firstName", email, "password", roles) 
+	VALUES (_firstName, _email, _password, _roles);
+END
+$$;
+
+- Получение пользователя по id
+CREATE FUNCTION GetUserById(_id int)
+RETURNS SETOF users AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM users WHERE id = _id;
+END
+$$ LANGUAGE plpgsql;
+
+- Получение пользователя по email
+CREATE FUNCTION GetUserByEmail(_email varchar)
+RETURNS SETOF users AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM users WHERE email = _email;
+END
+$$ LANGUAGE plpgsql;
+
+	Н О В О С Т И
+- Создание новости
+CREATE PROCEDURE CreateNews 
+(
+	_title varchar,
+	_description varchar,
+	_cover varchar,
+	_userId int
+)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	INSERT INTO news (title, description, cover, "userId") VALUES (_title, _description, _cover, _userId);
+END
+$$;
+
+- Получение новости по id
+CREATE FUNCTION GetNewsById(_id int)
+RETURNS SETOF news AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM news WHERE id = _id;
+END
+$$ LANGUAGE plpgsql;
+
+- Получение всего списка новостей
+CREATE FUNCTION GetAllNews()
+RETURNS SETOF news AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM news;
+END
+$$ LANGUAGE plpgsql;
+
+- Редактирование новости
+CREATE PROCEDURE EditNews (
+	_id int,
+	_title varchar,
+	_description varchar,
+	_cover varchar
+)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	UPDATE news SET title = _title, description = _description, cover = _cover WHERE id = _id; 
+END
+$$;
+
+- Удаление новости
+CREATE PROCEDURE DeleteNews (_id int)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	DELETE FROM news WHERE id = _id; 
+END
+$$;
+
+	К О М М Е Н Т А Р И И
+- Создание комментария
+CREATE PROCEDURE CreateComment 
+(
+	_message varchar,
+	_newsId int,
+	_userId int
+)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	INSERT INTO comments (message, "newsId", "userId") 
+	VALUES (_message, _newsId, _userId);
+END
+$$;
+
+- Редактирование комментария
+CREATE PROCEDURE EditComment (_id int, _message varchar)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	UPDATE comments SET message = _message WHERE id = _id; 
+END
+$$;
+
+- Удаление всех комментариев новости
+CREATE PROCEDURE DeleteAllCommentsOfNews (_newsId int)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	DELETE FROM comments WHERE comments."newsId" = _newsId; 
+END
+$$;
+
+- Удаление комментария
+CREATE PROCEDURE DeleteComment (_id int)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	DELETE FROM comments WHERE id = _id; 
+END
+$$;
+
+- Получение всех комментариев новости
+CREATE FUNCTION GetAllCommentsOfNews(newsId int)
+RETURNS SETOF comments AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM comments WHERE comments."newsId" = _newsId;
+END
+$$ LANGUAGE plpgsql;
